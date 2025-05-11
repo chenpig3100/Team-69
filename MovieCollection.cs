@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Movie;
 
 namespace Team_69
 {
@@ -106,29 +107,69 @@ namespace Team_69
             }
         }
 
+        // primary part for algorithm
         public void DisplayTop3()
         {
-            Movie[] top = new Movie[3];
-
-            for (int i = 0;i < Capacity;i++)
+            // using Min Heap
+            Movie[] heap = new Movie[3];
+            int heapSize = 0;
+            for (int i = 0; i < Capacity; i++)
             {
                 if (table[i] == null) continue;
-                for (int j = 0; j < 3; j++)
+                Movie current = table[i];
+                if (heapSize < 3)
                 {
-                    if (top[j] == null || table[i].BorrowedCount > top[j].BorrowedCount)
-                    {
-                        for (int k = 2; k > j; k--) top[k] = top[k - 1];
-                        top[j] = table[i];
-                        break;
-                    }
+                    // confuse
+                    heap[heapSize++] = current;
+                    HeapifyUp(heap, heapSize - 1);
+                }
+                else if (current.BorrowedCount > heap[0].BorrowedCount)
+                {
+                    heap[0] = current;
+                    HeapifyDown(heap, 0, heapSize);
                 }
             }
 
+            // Sort
+            Array.Sort(heap, (a, b) => b.BorrowedCount.CompareTo(a.BorrowedCount));
+
             Console.WriteLine("Top 3 Most Borrowed Movies:");
-            foreach (var movie in top)
+            foreach (var movie in heap)
+                if (movie != null)
+                    Console.WriteLine($"{movie.Title} - Borrowed {movie.BorrowedCount} times");
+        }
+
+        private void HeapifyUp(Movie[] heap, int index)
+        {
+            while (index > 0)
             {
-                if (movie != null) Console.WriteLine($"{movie.Title} - Borrowed {movie.BorrowedCount} times");
+                int parent = (index - 1) / 2;
+                if (heap[index].BorrowedCount >= heap[parent].BorrowedCount) break;
+                Swap(heap, index, parent);
+                index = parent;
             }
+        }
+
+        private void HeapifyDown(Movie[] heap, int index, int size)
+        {
+            while (index < size)
+            {
+                int smallest = index;
+                int left = 2 * index + 1;
+                int right = 2 * index + 2;
+                if (left < size && heap[left].BorrowedCount < heap[smallest].BorrowedCount) smallest = left;
+                if (right < size && heap[right].BorrowedCount < heap[smallest].BorrowedCount) smallest = right;
+                if (smallest == index) break;
+                Swap(heap, index, smallest);
+                index = smallest;
+            }
+        }
+
+        private void Swap(Movie[] heap, int i, int j)
+        {
+            Movie temp = heap[i];
+            heap[i] = heap[j];
+            heap[j] = temp;
         }
     }
 }
