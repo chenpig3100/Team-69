@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 
 
-
 namespace Team_69
 {
-		class Member
+	public class Member
 	{
         //Don't have to declare fields, just declare getters and setters inside Properties shown below-------------------------------------
         public string FirstName {  get; set; }
@@ -39,7 +38,7 @@ namespace Team_69
 
         //methods-------------------------------------
 		//"when a member borrows a movie" method
-        public bool Borrow(string title)
+        public bool Borrow(string title, Func<string, Movie?> findMovie)
 		{
 			if (BorrowedCount >= 5)
 			{
@@ -56,6 +55,22 @@ namespace Team_69
 					return false;
 				}
 			}
+
+			//The following two condition checks are to update the borrowedcount and available copies in the Movie.cs
+			Movie? movie = findMovie(title);
+			if (movie == null)
+			{
+				Console.WriteLine("Movie not found.");
+				return false;
+			}
+
+			if (!movie.Borrow())
+			{
+				Console.WriteLine("No available copies of this movie.");
+				return false;
+			}
+			//--------------------------------------------------------------
+
 
 			//The movie (represented by the variable title), will be stored in the BorrowedMovies array (position in the array determined by the BorrowedCount number)
 			BorrowedMovies[BorrowedCount] = title;
@@ -74,7 +89,8 @@ namespace Team_69
 				if (BorrowedMovies[i] == title)
 				{
 					BorrowedMovies[i] = BorrowedMovies[BorrowedCount - 1];
-					BorrowedMovies[i] = null;
+					BorrowedMovies[BorrowedCount - 1] = null;
+					BorrowedCount--;
 					Console.WriteLine($"You have successfully returned: {title}");
 					return true;
 				}

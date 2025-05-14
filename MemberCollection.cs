@@ -3,7 +3,7 @@
 
 namespace Team_69
 {
-    class MemberCollection
+    public class MemberCollection
     {
         //setting fields
         //declaring the compacity of the memberCollection array 
@@ -104,12 +104,23 @@ namespace Team_69
             return false;
         }
 
+        //Finding members, wrote in here "MemberCollection"
+        public Member? FindByNameAndPassword(string fname, string lname, string password)
+        {
+            for (int i=0; i< count; i++)
+            {
+                if (members[i] != null &&
+                    members[i].FirstName == fname &&
+                    members[i].LastName == lname &&
+                    members[i].Password == password)
+                {
+                    return members[i];
+                }
+            }
 
-
-
-
-
-
+            return null;
+           
+        }
 
     }
 
