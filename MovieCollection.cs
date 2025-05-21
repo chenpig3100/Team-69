@@ -113,9 +113,11 @@ namespace Team_69
             // using Min Heap
             Movie[] heap = new Movie[3];
             int heapSize = 0;
+
             for (int i = 0; i < Capacity; i++)
             {
-                if (table[i] == null) continue;
+                if (table[i] == null || table[i].BorrowedCount == 0) continue;
+
                 Movie current = table[i];
                 if (heapSize < 3)
                 {
@@ -130,13 +132,31 @@ namespace Team_69
                 }
             }
 
-            // Sort
-            Array.Sort(heap, (a, b) => b.BorrowedCount.CompareTo(a.BorrowedCount));
+            if (heapSize == 0)
+            {
+                Console.WriteLine("No movies have been borrowed yet.");
+                return;
+            }
 
-            Console.WriteLine("Top 3 Most Borrowed Movies:");
-            foreach (var movie in heap)
-                if (movie != null)
-                    Console.WriteLine($"{movie.Title} - Borrowed {movie.BorrowedCount} times");
+            // Sort
+            Array.Sort(heap, (a, b) =>
+            {
+                if (a == null && b == null) return 0;
+                if (a == null) return 1;
+                if (b == null) return -1;
+                return b.BorrowedCount.CompareTo(a.BorrowedCount);
+            });
+
+
+            Console.WriteLine("\nTop 3 Most Borrowed Movies:");
+            for (int i = 0; i < 3; i++)
+            {
+                if (heap[i] != null)
+                    Console.WriteLine($"{i + 1}. {heap[i].Title} - Borrowed {heap[i].BorrowedCount} time(s)");
+                else
+                    Console.WriteLine($"{i + 1}. null");
+            }
+            
         }
 
         private void HeapifyUp(Movie[] heap, int index)
