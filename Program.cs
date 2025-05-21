@@ -25,6 +25,7 @@
                 Console.WriteLine("Select from the following:");
                 Console.WriteLine("1. Staff");
                 Console.WriteLine("2. Member");
+                Console.WriteLine("3. RunExperiment");
                 Console.WriteLine("0. End the program");
                 Console.Write("\nEnter your choice ==> ");
 
@@ -38,6 +39,11 @@
                     case "2":
                         currentMember = MemberLogin();
                         if (currentMember != null) MemberMenu();
+                        break;
+
+                    case "3":
+                        MovieCollectionExperiment.Run();
+                        Pause();
                         break;
 
                     case "0":
