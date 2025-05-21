@@ -246,30 +246,56 @@
                 return;
             }
 
-            int borrowedCount = movie.TotalCopies - movie.AvailableCopies;
-
-            Console.WriteLine($"There are {movie.AvailableCopies} available and {borrowedCount} currently borrowed.");
-            Console.Write("How many copies do you want to remove? ");
+            Console.WriteLine($"There are {movie.AvailableCopies} available copies. How many to remove?");
             if (int.TryParse(Console.ReadLine(), out int countToRemove))
             {
-                if(countToRemove <= 0 || countToRemove > movie.AvailableCopies)
+                if (countToRemove <= 0 || countToRemove > movie.AvailableCopies)
                 {
                     Console.WriteLine("Invalid number of copies to remove.");
                 }
-                else if (countToRemove == movie.AvailableCopies && borrowedCount > 0)
-                {
-                    Console.WriteLine("This movie is currently borowed by member(s). Cannot remove all copies.");
-                }
-                else if (countToRemove == movie.AvailableCopies && borrowedCount == 0)
-                {
-                    movieCollection.RemoveMovie(title);
-                    Console.WriteLine($"All copies of '{title}' removed from the system.");
-                }
-                
                 else
                 {
-                    movie.RemoveCopies(countToRemove);
-                    Console.WriteLine($"Removed {countToRemove} copies of '{title}'.");
+                    //Count how many members are currently rening this movie
+                    int borrowedCount = 0;
+                    var field = typeof(MemberCollection).GetField("members", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    Member[] members = field.GetValue(memberCollection) as Member[];
+
+                    for (int i = 0; i < memberCollection.Count; i++)
+                    {
+                        Member m = members[i];
+                        if (m != null)
+                        {
+                            foreach (var t in m.BorrowedMovies)
+                            {
+                                if (t == title)
+                                {
+                                    borrowedCount++;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (countToRemove == movie.AvailableCopies)
+                    {
+                        if (borrowedCount > 0)
+                        {
+                            //Only remove available copies, keep the movie in system
+                            movie.RemoveCopies(countToRemove);
+                            Console.WriteLine($"Removed all available copies of '{title}', but kept the movie record since it is still borrowed.");
+                        }
+                        else
+                        {
+                            //No borrowed copies and staff removed all available => remove the movie completely
+                            movieCollection.RemoveMovie(title);
+                            Console.WriteLine($"All copies of '{title}' removed and movie deleted from system");
+                        }
+                    }
+                    else
+                    {
+                        movie.RemoveCopies(countToRemove);
+                        Console.WriteLine($"Removed {countToRemove} copies of '{title}'");
+                    }
                 }
             }
             else
@@ -292,6 +318,7 @@
             string phone = Console.ReadLine();
 
             memberCollection.Add(fname, lname, pw, phone);
+            Pause();
         }
 
         //Case 4. Remove a registered member from system
@@ -451,12 +478,8 @@
             }
 
             //Trying to borrow the movie out, using Func<string, Movie?>
-            bool success = currentMember.Borrow(title, movieCollection.Find);
-
-            if (success)
-            {
-                Console.WriteLine($"You have successfully borrowed: {title}");
-            }
+            currentMember.Borrow(title, movieCollection.Find);
+           
             //error message has already been printed out in Member.Borrow(), no need to repeat it here
             Pause();
         }
