@@ -92,6 +92,12 @@ namespace Team_69
             Movie[] allMovies = new Movie[count];
             int j = 0;
 
+            if (Count == 0)
+            {
+                Console.WriteLine("There is no movie in the collection.");
+                return;
+            }
+
             for (int i = 0; i < Capacity; i++)
             {
                 if (table[i] != null) allMovies[j++] = table[i];

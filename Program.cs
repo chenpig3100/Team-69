@@ -190,9 +190,16 @@
                         ReturnMovie();
                         break;
                     case "5":
-                        ShowBorrowedMovies();
+                        currentMember.DisplayBorrowedMovies();
+                        Pause();
                         break;
                     case "6":
+                        if (movieCollection.Count == 0)
+                        {
+                            Console.WriteLine("There is no movie in the collection.");
+                            Pause();
+                            break;
+                        }
                         movieCollection.DisplayTop3();
                         Pause();
                         break;
@@ -233,6 +240,7 @@
         }
 
         //Case 2, Remove DVDs from system
+        // Got issue: 如果可租借的movie == 0, movie會被delete, (需要加以被租借的movie的判斷)
         static void RemoveMovie()
         {
             Console.Write("Enter the movie title to remove: ");
@@ -292,6 +300,7 @@
             string phone = Console.ReadLine();
 
             memberCollection.Add(fname, lname, pw, phone);
+            // got issue: print successful log.
         }
 
         //Case 4. Remove a registered member from system
@@ -397,6 +406,12 @@
         //Case 2, Display all the info about a movie, given the title of the movie
         static void DisplayMovieInfo()
         {
+            if (movieCollection.Count == 0)
+            {
+                Console.WriteLine("There is no movie in the collection.");
+                Pause();
+                return;
+            }
             Console.WriteLine("Enter the title of the movie: ");
             string title = Console.ReadLine();
             Movie movie = movieCollection.Find(title);
@@ -417,9 +432,9 @@
         //Case 3, Borrow a movie DVD
         static void BorrowMovie()
         {
-            if (currentMember == null)
+            if (movieCollection.Count == 0)
             {
-                Console.WriteLine("Please login first.");
+                Console.WriteLine("There is no movie in the collection.");
                 Pause();
                 return;
             }
@@ -455,6 +470,7 @@
 
             if (success)
             {
+                // got issue: same message displayed.
                 Console.WriteLine($"You have successfully borrowed: {title}");
             }
             //error message has already been printed out in Member.Borrow(), no need to repeat it here
@@ -464,9 +480,9 @@
         //Case 4, Return a movie DVD
         static void ReturnMovie()
         {
-            if (currentMember == null)
+            if (currentMember.BorrowedCount == 0)
             {
-                Console.WriteLine("Please login first.");
+                Console.WriteLine("You don't have any borrowed movie.");
                 Pause();
                 return;
             }
@@ -492,20 +508,19 @@
         }
 
         //Case 5, List current borrowing movies
-        static void ShowBorrowedMovies()
-        {
-            if (currentMember == null)
-            {
-                Console.WriteLine("Please login first.");
-                return;
-            }
-
-            currentMember.DisplayBorrowedMovies();
-            Pause();
-        }
 
 
         //Case 6, we're doing that in the MovieCollection class
+
+        static void CheckMovieCount()
+        {
+            
+        }
+
+        static void CheckMemberMovieCount()
+        {
+           
+        }
     }
   
 }

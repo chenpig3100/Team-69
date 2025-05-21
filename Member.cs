@@ -102,13 +102,13 @@ namespace Team_69
         }
 
         //"when a member displays all borrowed movies" method
-        public bool DisplayBorrowedMovies()
+        public void DisplayBorrowedMovies()
 		{
             //if the movie array doesn't have any movies, return an error message
             if (BorrowedCount == 0)
 			{
                 Console.WriteLine("You didn't borrow any movie so there are no movies no display!");
-                return false;
+                return;
             }
 
             //loop thru the movie array and print out the title of every movie
@@ -117,7 +117,6 @@ namespace Team_69
 			{
 				Console.WriteLine($"Movie {i + 1}: {BorrowedMovies[i]}");
 			}
-            return true;
 
 		}
 
